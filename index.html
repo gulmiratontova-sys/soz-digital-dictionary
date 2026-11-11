@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Жастар сөздігі</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: Arial, sans-serif;
+    background: #f4f6fb; color: #20243a;
+  }
+  .container { max-width: 850px; margin: 0 auto; padding: 32px 18px; }
+  header {
+    background: linear-gradient(135deg, #6657d9, #9488f2);
+    color: white; padding: 30px 24px; border-radius: 22px;
+    text-align: center; box-shadow: 0 8px 24px #5146a522;
+  }
+  h1 { margin: 0 0 10px; font-size: 30px; }
+  header p { margin: 0; line-height: 1.5; opacity: .95; }
+  .search { margin: 24px 0 16px; }
+  input {
+    width: 100%; padding: 16px 18px; border: 1px solid #d9dced;
+    border-radius: 14px; font-size: 16px; outline: none;
+    background: white;
+  }
+  input:focus { border-color: #7164df; box-shadow: 0 0 0 3px #7164df22; }
+  .count { color: #73778d; font-size: 14px; margin: 0 2px 12px; }
+  .entry {
+    background: white; border: 1px solid #e7e9f2; border-radius: 16px;
+    padding: 18px; margin: 12px 0; box-shadow: 0 3px 12px #24284a08;
+  }
+  .word { font-size: 21px; font-weight: 700; color: #5548c7; margin-bottom: 12px; }
+  .detail { display: grid; grid-template-columns: 130px 1fr; gap: 7px 12px; line-height: 1.45; }
+  .label { color: #777b91; font-size: 14px; }
+  .value { font-size: 15px; }
+  .empty { text-align: center; color: #777b91; padding: 28px; }
+  footer { text-align: center; color: #9295a7; font-size: 13px; margin-top: 28px; }
+  @media (max-width: 480px) {
+    .container { padding: 18px 12px; }
+    h1 { font-size: 25px; }
+    .detail { grid-template-columns: 1fr; gap: 3px; }
+    .label { margin-top: 7px; }
+  }
+</style>
+</head>
+<body>
+<main class="container">
+  <header>
+    <h1>Жастар сөздігі</h1>
+    <p>Қазіргі сөйлеу тіліндегі сөздер мен тіркестердің мағынасы</p>
+  </header>
+
+  <div class="search">
+    <input id="searchInput" type="search" placeholder="Сөзді іздеңіз... (мысалы: Ну енді)" aria-label="Сөзді іздеу">
+  </div>
+  <p class="count" id="count"></p>
+  <section id="dictionary" aria-live="polite"></section>
+  <footer>Онлайн сөздік • Қазақ тіліндегі түсіндірме</footer>
+</main>
+
+<script>
+const words = [
+  {
+    word: "Ну енді",
+    language: "Орысша-қазақша аралас",
+    meaning: "Енді, сонымен",
+    function: "Қыстырма қолданыс"
+  },
+  {
+    word: "Как это?",
+    language: "Орыс тілі",
+    meaning: "Қалайша? Бұл қалай?",
+    function: "Сұраулы қыстырма қолданыс"
+  },
+  {
+    word: "Ну енді, солай да енді",
+    language: "Аралас",
+    meaning: "Енді солай ғой",
+    function: "Сөйлеу тіліне тән тіркес"
+  }
+];
+
+const input = document.getElementById("searchInput");
+const list = document.getElementById("dictionary");
+const count = document.getElementById("count");
+
+function render(items) {
+  list.innerHTML = "";
+  count.textContent = `Сөз саны: ${items.length}`;
+  if (!items.length) {
+    list.innerHTML = '<div class="empty">Бұл сөздікке сәйкес сөз табылмады.</div>';
+    return;
+  }
+  items.forEach(item => {
+    const card = document.createElement("article");
+    card.className = "entry";
+    card.innerHTML = `
+      <div class="word"></div>
+      <div class="detail">
+        <div class="label">Тілі</div><div class="value language"></div>
+        <div class="label">Қазақша мағынасы</div><div class="value meaning"></div>
+        <div class="label">Тілдік қызметі</div><div class="value function"></div>
+      </div>`;
+    card.querySelector(".word").textContent = item.word;
+    card.querySelector(".language").textContent = item.language;
+    card.querySelector(".meaning").textContent = item.meaning;
+    card.querySelector(".function").textContent = item.function;
+    list.appendChild(card);
+  });
+}
+input.addEventListener("input", () => {
+  const q = input.value.trim().toLocaleLowerCase("kk");
+  render(words.filter(item =>
+    [item.word, item.language, item.meaning, item.function]
+      .some(value => value.toLocaleLowerCase("kk").includes(q))
+  ));
+});
+render(words);
+</script>
+</body>
+</html>
